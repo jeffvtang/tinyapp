@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>TinyApp</title>
+</head>
+
+<header>
+  <% include partials/_header %>
+</header>
+
+<body>
+  <!-- Add your EJS code here -->
+  <!--   <ul>
+    <% for (var link in urls){ %>
+      <li>
+        <%= link %>
+      </li>
+      <li>
+        <%= urls[link] %>
+      </li>
+      <% } %>
+  </ul> -->
+  <div class="container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Shortened</th>
+          <th>Full Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (var link in urls) { %>
+          <tr>
+            <td>
+              <%- link %>
+            </td>
+            <td>
+              <%= urls[link] %>
+            </td>
+          </tr>
+          <% } %>
+            <tr>
+              <td colSpan="2">
+                <a href="/urls/new">Shorten Link</a>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
+  <!-- <a href="/urls/shorten-link">Shorten Link</a> -->
+</body>
+
+</html>
