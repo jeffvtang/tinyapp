@@ -95,14 +95,23 @@ app.get("/u/:shortURL", (req, res) => {
   // res.redirect('/urls')
 });
 
-app.get("/400", (req, res) =>{
+app.get("/400", (req, res) => {
   res.render("400")
 })
 
 app.post("/register", (req, res) => {
+  console.log(users)
   let newUser = req.body.email
   let newPass = req.body.password
+  for (list in users) {
+    objectEmail = users[list].email
+    if (newUser == objectEmail) {
+      console.log('new email already existing')
+      res.redirect("400")
+    }
+  }
   if (!newUser || !newPass) {
+    console.log('missing parameter')
     res.redirect("400")
   } else {
     randUserID = generateRandomString()
@@ -114,10 +123,7 @@ app.post("/register", (req, res) => {
     res.cookie('user_id', randUserID, {
       expires: 0
     })
-    // console.log(users[randUserID])
-    // console.log(users)
-    // console.log(newUser)
-    // console.log(newPass)
+    console.log('success adding user')
     res.redirect("/urls")
   }
 })
