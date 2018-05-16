@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-
+const users = {}
 
 app.use(cookieParser())
 app.set("view engine", "ejs");
@@ -84,10 +84,18 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  let newUser = req.body.regUser
-  let newPass = req.body.regPass
-  console.log(newUser)
-  console.log(newPass)
+  let newUser = req.body.email
+  let newPass = req.body.password
+  randUserID = generateRandomString()
+  users[randUserID] = {
+    id: randUserID,
+    email: newUser,
+    password: newPass
+  }
+  // console.log(users[randUserID])
+  // console.log(users)
+  // console.log(newUser)
+  // console.log(newPass)
   res.redirect("/urls")
 })
 
