@@ -48,6 +48,14 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+app.post("/urls/:shortURL/delete", (req, res) => {
+  let shortURL = req.params.shortURL
+  if (shortURL) {
+    delete urlDatabase[shortURL]
+  }
+  res.redirect("/urls/")
+})
+
 app.post("/urls", (req, res) => {
   console.log(req.body); // debug statement to see POST parameters
   // res.send("Ok"); // Respond with 'Ok' (we will replace this)
@@ -73,6 +81,7 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
   // res.redirect('/urls')
 });
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

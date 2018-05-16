@@ -27,16 +27,22 @@
         <tr>
           <th>Shortened</th>
           <th>Full Link</th>
+          <th>Delete</th>
         </tr>
       </thead>
       <tbody>
-        <% for (var link in urls) { %>
+        <% for (const links in urls) { %>
           <tr>
             <td>
-              <%- link %>
+              <%- links %>
             </td>
             <td>
-              <%= urls[link] %>
+              <%= urls[links] %>
+            </td>
+            <td>
+              <form method="POST" action="/urls/<%= links %>/delete">
+                <input type="submit" value="Delete" />
+              </form>
             </td>
           </tr>
           <% } %>
