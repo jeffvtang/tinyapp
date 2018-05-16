@@ -43,19 +43,41 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlDatabase
+    urls: urlDatabase,
+    username: req.cookies['username']
   };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies['username']
+  }
+  res.render("urls_new", templateVars);
+});
+
+app.get("/urls/:id", (req, res) => {
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id],
+    username: req.cookies['username']
+  };
+  res.render("urls_show", templateVars);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  // let longURL = urlDatabase[shortURL]
+  // let longURL = "http://www.lighthouselabs.ca"
+  let shortURL = req.params.shortURL
+  let longURL = urlDatabase[shortURL]
+  res.redirect(longURL);
+  // res.redirect('/urls')
 });
 
 app.post("/login", (req, res) => {
   userCookie = req.body.login
   if (userCookie) {
-    res.cookie('username', userCookie, {expires: 0})
+    res.cookie('username', userCookie)
   }
   res.redirect("/urls")
 })
@@ -82,24 +104,6 @@ app.post("/urls", (req, res) => {
   // res.redirect("/urls/" + randomShortURL)
   res.redirect("/urls")
 });
-
-app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id]
-  };
-  res.render("urls_show", templateVars);
-});
-
-app.get("/u/:shortURL", (req, res) => {
-  // let longURL = urlDatabase[shortURL]
-  // let longURL = "http://www.lighthouselabs.ca"
-  let shortURL = req.params.shortURL
-  let longURL = urlDatabase[shortURL]
-  res.redirect(longURL);
-  // res.redirect('/urls')
-});
-
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
