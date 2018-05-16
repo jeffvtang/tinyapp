@@ -33,6 +33,15 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+app.get("/urls/register", (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies['username']
+  };
+  res.render("urls_register", templateVars);
+
+})
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -73,6 +82,7 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
   // res.redirect('/urls')
 });
+
 
 app.post("/login", (req, res) => {
   userCookie = req.body.login
