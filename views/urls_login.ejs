@@ -1,0 +1,18 @@
+<header>
+  <% include partials/_header %>
+</header>
+
+<body>
+  <p>
+    <% if (!users.userRandomID.id) { %>
+      <form action="/login" method="POST">
+        <input type="email" name="login" placeholder="Email address">
+        <input type="password" name="password" placeholder="Password">
+        <input type="submit" value="Login">
+      </form>
+      <% } else { %>
+        <meta action="/urls" method="GET">
+        <% } %>
+  </p>
+
+</body>

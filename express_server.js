@@ -54,6 +54,15 @@ app.get("/urls/register", (req, res) => {
 
 })
 
+app.get("/urls/login", (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    users: users
+  };
+  res.render("urls_login", templateVars);
+
+})
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
