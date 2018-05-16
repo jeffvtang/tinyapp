@@ -77,8 +77,18 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   userCookie = req.body.login
   if (userCookie) {
-    res.cookie('username', userCookie)
+    res.cookie('username', userCookie, {
+      expires: 0
+    })
   }
+  res.redirect("/urls")
+})
+
+app.post("/logout", (req, res) => {
+  // let templateVars = {
+  //   username: req.cookies['username']
+  // };
+  res.clearCookie('username')
   res.redirect("/urls")
 })
 
