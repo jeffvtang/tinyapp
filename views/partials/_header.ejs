@@ -1,6 +1,6 @@
 <head>Header Title WIP</head>
 <!-- name -->
-<% if (!username) { %>
+<% if (!users.userRandomID.id) { %>
   <form action="/login" method="POST">
     <!-- needtofix syntax? needs a type  -->
     <input type="text" name="login" placeholder="username">
@@ -8,7 +8,7 @@
   </form>
   <% } else { %>
     <br>Logged in as
-    <%=username %>
+    <%=users.userRandomID.id %>
       <form action="/logout" method="POST">
         <input type="submit" value="Logout">
       </form>
