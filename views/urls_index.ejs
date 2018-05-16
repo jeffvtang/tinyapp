@@ -27,6 +27,7 @@
         <tr>
           <th>Shortened</th>
           <th>Full Link</th>
+          <th></th>
           <th>Delete</th>
         </tr>
       </thead>
@@ -38,6 +39,9 @@
             </td>
             <td>
               <%= urls[links] %>
+            </td>
+            <td>
+              <a href="/urls/<%= links %>">Edit</a>
             </td>
             <td>
               <form method="POST" action="/urls/<%= links %>/delete">

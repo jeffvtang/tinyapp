@@ -56,6 +56,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls/")
 })
 
+app.post("/urls/:shortURL/edit", (req, res) => {
+  let shortURL = req.params.shortURL
+  urlDatabase[shortURL] = req.body.editURL
+  res.redirect("/urls/")
+})
+
 app.post("/urls", (req, res) => {
   console.log(req.body); // debug statement to see POST parameters
   // res.send("Ok"); // Respond with 'Ok' (we will replace this)
