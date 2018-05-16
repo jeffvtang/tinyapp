@@ -8,7 +8,19 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-const users = {}
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
 
 app.use(cookieParser())
 app.set("view engine", "ejs");
@@ -83,20 +95,31 @@ app.get("/u/:shortURL", (req, res) => {
   // res.redirect('/urls')
 });
 
+app.get("/400", (req, res) =>{
+  res.render("400")
+})
+
 app.post("/register", (req, res) => {
   let newUser = req.body.email
   let newPass = req.body.password
-  randUserID = generateRandomString()
-  users[randUserID] = {
-    id: randUserID,
-    email: newUser,
-    password: newPass
+  if (!newUser || !newPass) {
+    res.redirect("400")
+  } else {
+    randUserID = generateRandomString()
+    users[randUserID] = {
+      id: randUserID,
+      email: newUser,
+      password: newPass
+    }
+    res.cookie('user_id', randUserID, {
+      expires: 0
+    })
+    // console.log(users[randUserID])
+    // console.log(users)
+    // console.log(newUser)
+    // console.log(newPass)
+    res.redirect("/urls")
   }
-  // console.log(users[randUserID])
-  // console.log(users)
-  // console.log(newUser)
-  // console.log(newPass)
-  res.redirect("/urls")
 })
 
 
