@@ -53,14 +53,10 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  username = req.body.login
-  // console.log(username)
-  // res.clearCookie('username')
-  res.cookie('username', username)
-  console.log(cookieParser.JSONCookies(username))
-  // user = req.body.login
-  // console.log(req.cookies.username)
-  // console.log(user)
+  userCookie = req.body.login
+  if (userCookie) {
+    res.cookie('username', userCookie, {expires: 0})
+  }
   res.redirect("/urls")
 })
 
