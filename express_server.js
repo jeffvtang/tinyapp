@@ -52,6 +52,18 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+app.post("/login", (req, res) => {
+  username = req.body.login
+  // console.log(username)
+  // res.clearCookie('username')
+  res.cookie('username', username)
+  console.log(cookieParser.JSONCookies(username))
+  // user = req.body.login
+  // console.log(req.cookies.username)
+  // console.log(user)
+  res.redirect("/urls")
+})
+
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL
   if (shortURL) {
