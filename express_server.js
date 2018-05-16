@@ -83,6 +83,14 @@ app.get("/u/:shortURL", (req, res) => {
   // res.redirect('/urls')
 });
 
+app.post("/register", (req, res) => {
+  let newUser = req.body.regUser
+  let newPass = req.body.regPass
+  console.log(newUser)
+  console.log(newPass)
+  res.redirect("/urls")
+})
+
 
 app.post("/login", (req, res) => {
   userCookie = req.body.login
