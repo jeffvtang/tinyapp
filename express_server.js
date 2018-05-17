@@ -94,7 +94,7 @@ app.get("/", (req, res) => {
 app.get("/urls/register", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    users: users[req.cookies['user_id']]
+    users: users[req.session.user_id]
   };
   res.render("urls_register", templateVars);
 
@@ -103,9 +103,9 @@ app.get("/urls/register", (req, res) => {
 app.get("/urls/login", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    users: users[req.cookies['user_id']]
+    users: users[req.session.user_id]
   };
-  if (!req.cookies['user_id']) {
+  if (!req.session.user_id) {
     res.render("urls_login", templateVars);
   } else {
     res.redirect("/urls")
@@ -122,8 +122,8 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlsForUser(req.cookies['user_id']),
-    users: users[req.cookies['user_id']]
+    urls: urlsForUser(req.session.user_id),
+    users: users[req.session.user_id]
   };
   res.render("urls_index", templateVars);
 });
@@ -131,9 +131,9 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    users: users[req.cookies['user_id']]
+    users: users[req.session.user_id]
   }
-  if (!req.cookies['user_id']) {
+  if (!req.session.user_id) {
     // res.render("urls_index", templateVars);
     res.redirect("/urls")
   } else {
@@ -151,14 +151,14 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
-    users: users[req.cookies['user_id']]
+    users: users[req.session.user_id]
   };
   //console.log(req.params.id) // giving 9sm5xK 
-  if (!req.cookies['user_id']) {
+  if (!req.session.user_id) {
     res.status(400).send('please login to edit links')
     return
   }
-  if (req.cookies['user_id'] == urlDatabase[req.params.id].userID) {
+  if (req.session.user_id == urlDatabase[req.params.id].userID) {
     //console.log(req.params.id)
     res.render("urls_show", templateVars);
   } else {
@@ -199,9 +199,10 @@ app.post("/register", (req, res) => {
       email: newUser,
       password: newPass
     }
-    res.cookie('user_id', randUserID, {
-      expires: 0
-    })
+    // res.cookie('user_id', randUserID, {
+    //   expires: 0
+    // })
+    req.session.user_id = randUserID
     // console.log('success adding user')
     console.log(users)
     res.redirect("/urls")
@@ -218,9 +219,12 @@ app.post("/login", (req, res) => {
         // if (inputPassword == users[name].password) {
         if (bcrypt.compareSync(inputPassword, users[name].password)) {
           cookieID = users[name].id
-          res.cookie('user_id', cookieID, {
-            expires: 0
-          })
+          console.log(cookieID)
+          console.log(users[name].id)
+          // res.cookie('user_id', cookieID, {
+          //   expires: 0
+          // })
+          req.session.user_id = cookieID
           res.redirect("/urls")
           return
         } else {
@@ -240,13 +244,13 @@ app.post("/logout", (req, res) => {
   // let templateVars = {
   //   username: req.cookies['username']
   // };
-  res.clearCookie("user_id")
+  req.session.user_id = null
   res.redirect("/urls")
 })
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL
-  if (shortURL && req.cookies['user_id'] == urlDatabase[shortURL].userID) {
+  if (shortURL && req.session.user_id == urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL]
   }
   res.redirect("/urls/")
@@ -254,7 +258,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL
-  if ( /*shortURL && */ req.cookies['user_id'] == urlDatabase[shortURL].userID) {
+  if ( /*shortURL && */ req.session.user_id == urlDatabase[shortURL].userID) {
     urlDatabase[shortURL].longURL = req.body.editURL
   }
   res.redirect("/urls/")
@@ -264,7 +268,10 @@ app.post("/urls", (req, res) => {
   console.log(req.body); // debug statement to see POST parameters
   // res.send("Ok"); // Respond with 'Ok' (we will replace this)
   let randomShortURL = generateRandomString()
-  urlDatabase[randomShortURL] = req.body.longURL
+  urlDatabase[randomShortURL] =
+  {longURL: req.body.longURL,
+    userID: req.session.user_id}
+    console.log(urlDatabase)
   // res.redirect("/urls/" + randomShortURL)
   res.redirect("/urls")
 });
