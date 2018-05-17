@@ -131,29 +131,34 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  // console.log(urlDatabase[req.params.id].userID) // giving undefined
+  // console.log(users)
+  if (urlDatabase[req.params.id] === undefined) {
+    res.status(404).send('this url does not exist')
+    return
+  }
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
     users: users[req.cookies['user_id']]
   };
-  // console.log(req.params.id)
-  res.render("urls_show", templateVars);
-  
-  // if (req.cookies['user_id'] == users[templateVars.shortURL].userID) {
-  //   console.log(req.params.id)
-  //   res.render("urls_show", templateVars);
-  // } else {
-  //   res.status(400).send('cannot access url')
-  // }
+  //console.log(req.params.id) // giving 9sm5xK 
+  if (!req.cookies['user_id']){
+    res.status(400).send('please login to edit links')
+    return
+  }
+  if (req.cookies['user_id'] == urlDatabase[req.params.id].userID) {
+    //console.log(req.params.id)
+    res.render("urls_show", templateVars);
+  } else {
+    res.status(400).send('cannot access url not belonging to user')
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  // let longURL = urlDatabase[shortURL]
-  // let longURL = "http://www.lighthouselabs.ca"
   let shortURL = req.params.shortURL
-  let longURL = urlDatabase[shortURL]
+  let longURL = urlDatabase[shortURL].longURL
   res.redirect(longURL);
-  // res.redirect('/urls')
 });
 
 app.get("/400", (req, res) => {
@@ -193,11 +198,9 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   userCookie = req.body.login
   inputPassword = req.body.password
-  // console.log(userCookie)
   if (userCookie) {
     for (name in users) {
       if (userCookie == users[name].email) {
-        // console.log(inputPassword, users[name].password, inputPassword == users[name].password)
         if (inputPassword == users[name].password) {
           cookieID = users[name].id
           res.cookie('user_id', cookieID, {
@@ -206,7 +209,6 @@ app.post("/login", (req, res) => {
           res.redirect("/urls")
           return
         } else {
-          // console.log('password fail')
           res.status(400).send('Wrong password')
           return
         }

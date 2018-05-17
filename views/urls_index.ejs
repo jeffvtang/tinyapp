@@ -24,6 +24,7 @@
       <% } %>
   </ul> -->
   <div class="container">
+    <% if (users) { %>
     <table class="table">
       <thead>
         <tr>
@@ -59,6 +60,9 @@
             </tr>
       </tbody>
     </table>
+    <% } else {%>
+      <p>Please Register/Login</p>
+      <% } %>
   </div>
 
 
