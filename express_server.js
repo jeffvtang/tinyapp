@@ -136,7 +136,15 @@ app.get("/urls/:id", (req, res) => {
     longURL: urlDatabase[req.params.id].longURL,
     users: users[req.cookies['user_id']]
   };
+  // console.log(req.params.id)
   res.render("urls_show", templateVars);
+  
+  // if (req.cookies['user_id'] == users[templateVars.shortURL].userID) {
+  //   console.log(req.params.id)
+  //   res.render("urls_show", templateVars);
+  // } else {
+  //   res.status(400).send('cannot access url')
+  // }
 });
 
 app.get("/u/:shortURL", (req, res) => {
