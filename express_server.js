@@ -12,12 +12,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: "test"
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: "test"
   },
   "workingID": {
     id: "workingID",
@@ -46,6 +46,10 @@ var urlDatabase = {
     longURL: "http://www.lighthouselabs.ca",
     userID: "workingID"
   },
+  "b2xVn4": {
+    longURL: "http://www.lighthouselabs.ca2",
+    userID: "workingID"
+  },
   "9sm5xK": {
     longURL: "http://www.google.com",
     userID: "user2RandomID"
@@ -62,6 +66,15 @@ function generateRandomString() {
   return text;
 }
 
+function urlsForUser(id) {
+  let userURLS = {}
+  for (link in urlDatabase) {
+    if (urlDatabase[link].userID == id) {
+      userURLS[link] = urlDatabase[link]
+    }
+  }
+  return userURLS
+}
 
 app.get("/", (req, res) => {
   res.end("Hello!");
@@ -98,7 +111,7 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlDatabase,
+    urls: urlsForUser(req.cookies['user_id']),
     users: users[req.cookies['user_id']]
   };
   res.render("urls_index", templateVars);
@@ -120,7 +133,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     users: users[req.cookies['user_id']]
   };
   res.render("urls_show", templateVars);
@@ -207,7 +220,7 @@ app.post("/logout", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL
-  if (shortURL) {
+  if (shortURL && req.cookies['user_id'] == urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL]
   }
   res.redirect("/urls/")
@@ -215,7 +228,9 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL
-  urlDatabase[shortURL] = req.body.editURL
+  if ( /*shortURL && */ req.cookies['user_id'] == urlDatabase[shortURL].userID) {
+    urlDatabase[shortURL].longURL = req.body.editURL
+  }
   res.redirect("/urls/")
 })
 
