@@ -30,6 +30,13 @@ const users = {
 app.use(cookieParser())
 app.set("view engine", "ejs");
 
+//url has object for each user, and then connects urls
+var urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com"
+};
+
+//url has each short link as an ID and the longURL and userID as links in it
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -91,7 +98,11 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
     users: users[req.cookies['user_id']]
   }
-  res.render("urls_new", templateVars);
+  if (!req.cookies['user_id']) {
+    res.render("urls_index", templateVars);
+  } else {
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -153,20 +164,23 @@ app.post("/login", (req, res) => {
   if (userCookie) {
     for (name in users) {
       if (userCookie == users[name].email) {
-        console.log(inputPassword, users[name].password, inputPassword == users[name].password)
+        // console.log(inputPassword, users[name].password, inputPassword == users[name].password)
         if (inputPassword == users[name].password) {
           cookieID = users[name].id
           res.cookie('user_id', cookieID, {
             expires: 0
           })
           res.redirect("/urls")
+          return
         } else {
-          console.log('password fail')
+          // console.log('password fail')
           res.status(400).send('Wrong password')
+          return
         }
       }
     }
     res.status(400).send('email does not exist')
+    return
   }
   res.status(400).send('no email entered')
 })
