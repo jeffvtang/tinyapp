@@ -88,7 +88,12 @@ function urlsForUser(id) {
 }
 
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  // res.end("Hello!");
+  if (req.session.user_id){
+    res.redirect("/urls")
+    return
+  }
+  res.redirect("/urls/login")
 });
 
 app.get("/urls/register", (req, res) => {
@@ -116,9 +121,9 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-});
+// app.get("/hello", (req, res) => {
+//   res.end("<html><body>Hello <b>World</b></body></html>\n");
+// });
 
 app.get("/urls", (req, res) => {
   let templateVars = {
