@@ -1,7 +1,8 @@
 var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
-var cookieParser = require('cookie-parser')
+// var cookieParser = require('cookie-parser')
+var cookieSession = require('cookie-session')
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({
@@ -30,7 +31,14 @@ const users = {
 // const password = "purple-monkey-dinosaur"; // you will probably this from req.params
 // const hashedPassword = bcrypt.hashSync(password, 10);
 
-app.use(cookieParser())
+// app.use(cookieParser())
+app.use(cookieSession({
+  name: 'session',
+  keys: [ /* secret keys */ ],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 app.set("view engine", "ejs");
 
 // //url has object for each user, and then connects urls
