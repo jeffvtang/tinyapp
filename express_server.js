@@ -156,7 +156,7 @@ app.post("/login", (req, res) => {
         console.log(inputPassword, users[name].password, inputPassword == users[name].password)
         if (inputPassword == users[name].password) {
           cookieID = users[name].id
-          res.cookie('user_ID', cookieID, {
+          res.cookie('user_id', cookieID, {
             expires: 0
           })
           res.redirect("/urls")
@@ -175,7 +175,7 @@ app.post("/logout", (req, res) => {
   // let templateVars = {
   //   username: req.cookies['username']
   // };
-  res.clearCookie('user_id')
+  res.clearCookie("user_id")
   res.redirect("/urls")
 })
 
