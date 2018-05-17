@@ -1,12 +1,15 @@
 <head>Header Title WIP</head>
 <!-- name -->
-
-      <form action="/logout" method="POST">
-        <input type="submit" value="Logout">
-      </form>
-      <form action="/urls/register" method="GET">
-        <input type="submit" value="Register">
-      </form>
-      <form action="/urls/login" method="GET">
-        <input type="submit" value="Login">
-      </form>
+<% if (!users) { %>
+  <form action="/urls/register" method="GET">
+    <input type="submit" value="Register">
+  </form>
+  <form action="/urls/login" method="GET">
+    <input type="submit" value="Login">
+  </form>
+  <% } else { %>
+    <br><%= users.email %>
+<form action="/logout" method="POST">
+  <input type="submit" value="Logout">
+</form>
+  <% } %>

@@ -19,7 +19,7 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   },
-  "sadsadsadcxxdsf": {
+  "workingID": {
     id: "workingID",
     email: "test@test.com",
     password: "test"
