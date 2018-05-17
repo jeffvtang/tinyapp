@@ -151,24 +151,24 @@ app.post("/login", (req, res) => {
   inputPassword = req.body.password
   // console.log(userCookie)
   if (userCookie) {
-    for (names in users) {
-      if (userCookie == users[names].email) {
-        if (inputPassword == users[names].password) {
-          cookieID = users[names].id
+    for (name in users) {
+      if (userCookie == users[name].email) {
+        console.log(inputPassword, users[name].password, inputPassword == users[name].password)
+        if (inputPassword == users[name].password) {
+          cookieID = users[name].id
           res.cookie('user_ID', cookieID, {
             expires: 0
           })
+          res.redirect("/urls")
         } else {
           console.log('password fail')
           res.status(400).send('Wrong password')
         }
-      } else {
-        res.status('403')
       }
-      // continue
     }
+    res.status(400).send('email does not exist')
   }
-  res.redirect("/urls")
+  res.status(400).send('no email entered')
 })
 
 app.post("/logout", (req, res) => {
