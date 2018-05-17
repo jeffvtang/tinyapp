@@ -30,16 +30,26 @@ const users = {
 app.use(cookieParser())
 app.set("view engine", "ejs");
 
-//url has object for each user, and then connects urls
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+// //url has object for each user, and then connects urls
+// var urlDatabase = {
+//   "workingID": {
+//     shortURL:
+
+//   }
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
 
 //url has each short link as an ID and the longURL and userID as links in it
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "workingID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "user2RandomID"
+  }
 };
 
 function generateRandomString() {
@@ -74,7 +84,7 @@ app.get("/urls/login", (req, res) => {
   if (!req.cookies['user_id']) {
     res.render("urls_login", templateVars);
   } else {
-    res.render("urls_index", templateVars)
+    res.redirect("/urls")
   }
 })
 
@@ -96,10 +106,12 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
+    urls: urlDatabase,
     users: users[req.cookies['user_id']]
   }
   if (!req.cookies['user_id']) {
-    res.render("urls_index", templateVars);
+    // res.render("urls_index", templateVars);
+    res.redirect("/urls")
   } else {
     res.render("urls_new", templateVars);
   }
