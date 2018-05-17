@@ -177,21 +177,24 @@ app.get("/400", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
-  console.log(users)
+  // console.log(users)
   let newUser = req.body.email
   let newPass = bcrypt.hashSync(req.body.password, 10)
   for (list in users) {
     objectEmail = users[list].email
+    // console.log(newUser, objectEmail, '&', users[list].email)
     if (newUser == objectEmail) {
       // console.log('new email already existing')
       // res.redirect("400")
-      res.status(400).status('email already exists')
+      res.status(400).send('email already exists')
+      return
     }
   }
   if (!newUser || !newPass) {
     // console.log('missing parameter')
     // res.redirect("400")
-    res.status(400).status('missing parameter')
+    res.status(400).send('missing parameter')
+    return
   } else {
     randUserID = generateRandomString()
     users[randUserID] = {
@@ -204,7 +207,7 @@ app.post("/register", (req, res) => {
     // })
     req.session.user_id = randUserID
     // console.log('success adding user')
-    console.log(users)
+    // console.log(users)
     res.redirect("/urls")
   }
 })
@@ -219,8 +222,8 @@ app.post("/login", (req, res) => {
         // if (inputPassword == users[name].password) {
         if (bcrypt.compareSync(inputPassword, users[name].password)) {
           cookieID = users[name].id
-          console.log(cookieID)
-          console.log(users[name].id)
+          // console.log(cookieID)
+          // console.log(users[name].id)
           // res.cookie('user_id', cookieID, {
           //   expires: 0
           // })
@@ -229,7 +232,7 @@ app.post("/login", (req, res) => {
           return
         } else {
           res.status(400).send('Wrong password')
-          console.log(inputPassword)
+          // console.log(inputPassword)
           return
         }
       }
@@ -265,13 +268,14 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 })
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // debug statement to see POST parameters
+  // console.log(req.body); // debug statement to see POST parameters
   // res.send("Ok"); // Respond with 'Ok' (we will replace this)
   let randomShortURL = generateRandomString()
-  urlDatabase[randomShortURL] =
-  {longURL: req.body.longURL,
-    userID: req.session.user_id}
-    console.log(urlDatabase)
+  urlDatabase[randomShortURL] = {
+    longURL: req.body.longURL,
+    userID: req.session.user_id
+  }
+  // console.log(urlDatabase)
   // res.redirect("/urls/" + randomShortURL)
   res.redirect("/urls")
 });
