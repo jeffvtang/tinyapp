@@ -140,7 +140,7 @@ app.get("/urls/new", (req, res) => {
   }
   if (!req.session.user_id) {
     // res.render("urls_index", templateVars);
-    res.redirect("/urls")
+    res.redirect("/urls/login")
   } else {
     res.render("urls_new", templateVars);
   }
@@ -264,7 +264,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls/")
 })
 
-app.post("/urls/:shortURL/edit", (req, res) => {
+app.post("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL
   if ( /*shortURL && */ req.session.user_id == urlDatabase[shortURL].userID) {
     urlDatabase[shortURL].longURL = req.body.editURL

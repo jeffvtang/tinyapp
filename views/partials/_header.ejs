@@ -1,11 +1,11 @@
 <head>Header Title WIP</head>
 <!-- name -->
 <% if (!users) { %>
-  <form action="/urls/register" method="GET">
-    <input type="submit" value="Register">
-  </form>
   <form action="/urls/login" method="GET">
     <input type="submit" value="Login">
+  </form>
+  <form action="/urls/register" method="GET">
+    <input type="submit" value="Register">
   </form>
   <% } else { %>
     <br><%= users.email %>
