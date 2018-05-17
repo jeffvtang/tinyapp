@@ -89,7 +89,7 @@ function urlsForUser(id) {
 
 app.get("/", (req, res) => {
   // res.end("Hello!");
-  if (req.session.user_id){
+  if (req.session.user_id) {
     res.redirect("/urls")
     return
   }
@@ -173,8 +173,14 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL
-  let longURL = urlDatabase[shortURL].longURL
-  res.redirect(longURL);
+  for (link in urlDatabase) {
+    if (shortURL == link) {
+      let longURL = urlDatabase[shortURL].longURL
+      res.redirect(longURL);
+      return
+    }
+  }
+  res.status(404).send('url does not exist')
 });
 
 app.get("/400", (req, res) => {
@@ -258,6 +264,13 @@ app.post("/logout", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL
+  if (!req.session.user_id){
+    res.status(400).send('cannot delete without logging in')
+    return
+  } else if (req.session.user_id !== urlDatabase[shortURL].userID){
+    res.status(400).send('cannot delete another users saved links')
+    return
+  }
   if (shortURL && req.session.user_id == urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL]
   }
@@ -266,6 +279,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL
+  if (!req.session.user_id){
+    res.status(400).send('cannot edit without logging in')
+    return
+  } else if (req.session.user_id !== urlDatabase[shortURL].userID){
+    res.status(400).send('cannot edit another users saved links')
+    return
+  }
   if ( /*shortURL && */ req.session.user_id == urlDatabase[shortURL].userID) {
     urlDatabase[shortURL].longURL = req.body.editURL
   }
@@ -275,14 +295,19 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   // console.log(req.body); // debug statement to see POST parameters
   // res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  if (!req.session.user_id){
+    res.status(400).send('not logged in')
+    return
+  }
   let randomShortURL = generateRandomString()
   urlDatabase[randomShortURL] = {
     longURL: req.body.longURL,
     userID: req.session.user_id
   }
+  // console.log(users)
   // console.log(urlDatabase)
   // res.redirect("/urls/" + randomShortURL)
-  res.redirect("/urls")
+  res.redirect(`/urls/${randomShortURL}`)
 });
 
 app.listen(PORT, () => {
