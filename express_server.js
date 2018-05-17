@@ -25,8 +25,14 @@ const users = {
     id: "workingID",
     email: "test@test.com",
     password: bcrypt.hashSync("test", 10)
+  },
+  'nqPn0E': {
+    id: 'nqPn0E',
+    email: 'abc@gmail.com',
+    password: '$2b$10$DYSk7Uj.p5d3AGvgtwI1u.xWktVOFSr6ccFPk1xSAgW4YdxSN4M8O'
   }
 }
+
 
 // const password = "purple-monkey-dinosaur"; // you will probably this from req.params
 // const hashedPassword = bcrypt.hashSync(password, 10);
@@ -93,19 +99,24 @@ app.get("/", (req, res) => {
     res.redirect("/urls")
     return
   }
-  res.redirect("/urls/login")
+  res.redirect("/login")
 });
 
-app.get("/urls/register", (req, res) => {
-  let templateVars = {
-    urls: urlDatabase,
-    users: users[req.session.user_id]
-  };
-  res.render("urls_register", templateVars);
+app.get("/register", (req, res) => {
+  if (!req.session.user_id) {
+    let templateVars = {
+      urls: urlDatabase,
+      users: users[req.session.user_id]
+    };
+    res.render("urls_register", templateVars);
+    return
+  } else {
+    res.redirect("/urls")
+  }
 
 })
 
-app.get("/urls/login", (req, res) => {
+app.get("/login", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     users: users[req.session.user_id]
@@ -140,7 +151,7 @@ app.get("/urls/new", (req, res) => {
   }
   if (!req.session.user_id) {
     // res.render("urls_index", templateVars);
-    res.redirect("/urls/login")
+    res.redirect("/login")
   } else {
     res.render("urls_new", templateVars);
   }
@@ -217,8 +228,8 @@ app.post("/register", (req, res) => {
     //   expires: 0
     // })
     req.session.user_id = randUserID
-    // console.log('success adding user')
-    // console.log(users)
+    console.log('success adding user')
+    console.log(users)
     res.redirect("/urls")
   }
 })
@@ -264,10 +275,10 @@ app.post("/logout", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL
-  if (!req.session.user_id){
+  if (!req.session.user_id) {
     res.status(400).send('cannot delete without logging in')
     return
-  } else if (req.session.user_id !== urlDatabase[shortURL].userID){
+  } else if (req.session.user_id !== urlDatabase[shortURL].userID) {
     res.status(400).send('cannot delete another users saved links')
     return
   }
@@ -279,10 +290,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL
-  if (!req.session.user_id){
+  if (!req.session.user_id) {
     res.status(400).send('cannot edit without logging in')
     return
-  } else if (req.session.user_id !== urlDatabase[shortURL].userID){
+  } else if (req.session.user_id !== urlDatabase[shortURL].userID) {
     res.status(400).send('cannot edit another users saved links')
     return
   }
@@ -295,7 +306,7 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   // console.log(req.body); // debug statement to see POST parameters
   // res.send("Ok"); // Respond with 'Ok' (we will replace this)
-  if (!req.session.user_id){
+  if (!req.session.user_id) {
     res.status(400).send('not logged in')
     return
   }
