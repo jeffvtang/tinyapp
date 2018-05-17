@@ -18,6 +18,11 @@ const users = {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
+  },
+  "sadsadsadcxxdsf": {
+    id: "workingID",
+    email: "test@test.com",
+    password: "test"
   }
 }
 
@@ -143,10 +148,25 @@ app.post("/register", (req, res) => {
 
 app.post("/login", (req, res) => {
   userCookie = req.body.login
+  inputPassword = req.body.password
+  // console.log(userCookie)
   if (userCookie) {
-    res.cookie('username', userCookie, {
-      expires: 0
-    })
+    for (names in users) {
+      if (userCookie == users[names].email) {
+        if (inputPassword == users[names].password) {
+          cookieID = users[names].id
+          res.cookie('user_ID', cookieID, {
+            expires: 0
+          })
+        } else {
+          console.log('password fail')
+          res.status(400).send('Wrong password')
+        }
+      } else {
+        res.status('403')
+      }
+      // continue
+    }
   }
   res.redirect("/urls")
 })
