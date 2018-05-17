@@ -8,24 +8,27 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+const bcrypt = require('bcrypt');
 const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "test"
+    password: bcrypt.hashSync("test", 10)
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "test"
+    password: bcrypt.hashSync("test", 10)
   },
   "workingID": {
     id: "workingID",
     email: "test@test.com",
-    password: "test"
+    password: bcrypt.hashSync("test", 10)
   }
 }
 
+// const password = "purple-monkey-dinosaur"; // you will probably this from req.params
+// const hashedPassword = bcrypt.hashSync(password, 10);
 
 app.use(cookieParser())
 app.set("view engine", "ejs");
@@ -143,7 +146,7 @@ app.get("/urls/:id", (req, res) => {
     users: users[req.cookies['user_id']]
   };
   //console.log(req.params.id) // giving 9sm5xK 
-  if (!req.cookies['user_id']){
+  if (!req.cookies['user_id']) {
     res.status(400).send('please login to edit links')
     return
   }
@@ -168,17 +171,19 @@ app.get("/400", (req, res) => {
 app.post("/register", (req, res) => {
   console.log(users)
   let newUser = req.body.email
-  let newPass = req.body.password
+  let newPass = bcrypt.hashSync(req.body.password, 10)
   for (list in users) {
     objectEmail = users[list].email
     if (newUser == objectEmail) {
-      console.log('new email already existing')
-      res.redirect("400")
+      // console.log('new email already existing')
+      // res.redirect("400")
+      res.status(400).status('email already exists')
     }
   }
   if (!newUser || !newPass) {
-    console.log('missing parameter')
-    res.redirect("400")
+    // console.log('missing parameter')
+    // res.redirect("400")
+    res.status(400).status('missing parameter')
   } else {
     randUserID = generateRandomString()
     users[randUserID] = {
@@ -189,7 +194,8 @@ app.post("/register", (req, res) => {
     res.cookie('user_id', randUserID, {
       expires: 0
     })
-    console.log('success adding user')
+    // console.log('success adding user')
+    console.log(users)
     res.redirect("/urls")
   }
 })
@@ -201,7 +207,8 @@ app.post("/login", (req, res) => {
   if (userCookie) {
     for (name in users) {
       if (userCookie == users[name].email) {
-        if (inputPassword == users[name].password) {
+        // if (inputPassword == users[name].password) {
+        if (bcrypt.compareSync(inputPassword, users[name].password)) {
           cookieID = users[name].id
           res.cookie('user_id', cookieID, {
             expires: 0
@@ -210,6 +217,7 @@ app.post("/login", (req, res) => {
           return
         } else {
           res.status(400).send('Wrong password')
+          console.log(inputPassword)
           return
         }
       }
