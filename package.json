@@ -1,0 +1,27 @@
+{
+  "name": "tinyapp",
+  "version": "1.0.0",
+  "description": "TinyApp is a full stack web application built with Node and Express that allows users to shorten long URLs (à la bit.ly).",
+  "main": "express_server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeffvtang/tinyapp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeffvtang/tinyapp/issues"
+  },
+  "homepage": "https://github.com/jeffvtang/tinyapp#readme",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "body-parser": "^1.18.3",
+    "cookie-session": "^2.0.0-beta.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3"
+  }
+}
