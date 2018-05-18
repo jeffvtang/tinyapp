@@ -5,7 +5,6 @@
 <body>
   <p>
     <%= shortURL %>
-      <!-- <%= longURL %> -->
       <form method="POST" action="/urls/<%= shortURL %>">
         <input id="editURL" type="text" name="editURL" placeholder="<%= longURL %>" value="<%= longURL %>" style="width: 300px">
         <input type="submit" value="Edit">

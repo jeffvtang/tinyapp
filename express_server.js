@@ -1,7 +1,6 @@
 var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
-// var cookieParser = require('cookie-parser')
 var cookieSession = require('cookie-session')
 
 const bodyParser = require("body-parser");
@@ -33,31 +32,13 @@ const users = {
   }
 }
 
-
-// const password = "purple-monkey-dinosaur"; // you will probably this from req.params
-// const hashedPassword = bcrypt.hashSync(password, 10);
-
-// app.use(cookieParser())
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
-
-  // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 app.set("view engine", "ejs");
 
-// //url has object for each user, and then connects urls
-// var urlDatabase = {
-//   "workingID": {
-//     shortURL:
-
-//   }
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
-
-//url has each short link as an ID and the longURL and userID as links in it
 var urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
@@ -132,10 +113,6 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-// app.get("/hello", (req, res) => {
-//   res.end("<html><body>Hello <b>World</b></body></html>\n");
-// });
-
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlsForUser(req.session.user_id),
@@ -150,7 +127,6 @@ app.get("/urls/new", (req, res) => {
     users: users[req.session.user_id]
   }
   if (!req.session.user_id) {
-    // res.render("urls_index", templateVars);
     res.redirect("/login")
   } else {
     res.render("urls_new", templateVars);
@@ -158,8 +134,6 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  // console.log(urlDatabase[req.params.id].userID) // giving undefined
-  // console.log(users)
   if (urlDatabase[req.params.id] === undefined) {
     res.status(404).send('this url does not exist')
     return
@@ -169,13 +143,11 @@ app.get("/urls/:id", (req, res) => {
     longURL: urlDatabase[req.params.id].longURL,
     users: users[req.session.user_id]
   };
-  //console.log(req.params.id) // giving 9sm5xK 
   if (!req.session.user_id) {
     res.status(400).send('please login to edit links')
     return
   }
   if (req.session.user_id == urlDatabase[req.params.id].userID) {
-    //console.log(req.params.id)
     res.render("urls_show", templateVars);
   } else {
     res.status(400).send('cannot access url not belonging to user')
@@ -199,22 +171,16 @@ app.get("/400", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
-  // console.log(users)
   let newUser = req.body.email
   let newPass = bcrypt.hashSync(req.body.password, 10)
   for (list in users) {
     objectEmail = users[list].email
-    // console.log(newUser, objectEmail, '&', users[list].email)
     if (newUser == objectEmail) {
-      // console.log('new email already existing')
-      // res.redirect("400")
       res.status(400).send('email already exists')
       return
     }
   }
   if (!newUser || !newPass) {
-    // console.log('missing parameter')
-    // res.redirect("400")
     res.status(400).send('missing parameter')
     return
   } else {
@@ -224,9 +190,6 @@ app.post("/register", (req, res) => {
       email: newUser,
       password: newPass
     }
-    // res.cookie('user_id', randUserID, {
-    //   expires: 0
-    // })
     req.session.user_id = randUserID
     console.log('success adding user')
     console.log(users)
@@ -241,20 +204,13 @@ app.post("/login", (req, res) => {
   if (userCookie) {
     for (name in users) {
       if (userCookie == users[name].email) {
-        // if (inputPassword == users[name].password) {
         if (bcrypt.compareSync(inputPassword, users[name].password)) {
           cookieID = users[name].id
-          // console.log(cookieID)
-          // console.log(users[name].id)
-          // res.cookie('user_id', cookieID, {
-          //   expires: 0
-          // })
           req.session.user_id = cookieID
           res.redirect("/urls")
           return
         } else {
           res.status(400).send('Wrong password')
-          // console.log(inputPassword)
           return
         }
       }
@@ -266,9 +222,6 @@ app.post("/login", (req, res) => {
 })
 
 app.post("/logout", (req, res) => {
-  // let templateVars = {
-  //   username: req.cookies['username']
-  // };
   req.session.user_id = null
   res.redirect("/urls")
 })
@@ -304,8 +257,6 @@ app.post("/urls/:shortURL", (req, res) => {
 })
 
 app.post("/urls", (req, res) => {
-  // console.log(req.body); // debug statement to see POST parameters
-  // res.send("Ok"); // Respond with 'Ok' (we will replace this)
   if (!req.session.user_id) {
     res.status(400).send('not logged in')
     return
@@ -315,9 +266,6 @@ app.post("/urls", (req, res) => {
     longURL: req.body.longURL,
     userID: req.session.user_id
   }
-  // console.log(users)
-  // console.log(urlDatabase)
-  // res.redirect("/urls/" + randomShortURL)
   res.redirect(`/urls/${randomShortURL}`)
 });
 
