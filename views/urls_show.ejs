@@ -1,14 +1,28 @@
-<header>
-  <% include partials/_header %>
-</header>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>TinyApp - Edit a URL</title>
+</head>
 
 <body>
+  <header>
+    <% include partials/_header %>
+  </header>
   <p>
+    Shortened URL:
     <%= shortURL %>
       <form method="POST" action="/urls/<%= shortURL %>">
+        <label for="editURL">Enter a URL:</label>
         <input id="editURL" type="text" name="editURL" placeholder="<%= longURL %>" value="<%= longURL %>" style="width: 300px">
         <input type="submit" value="Edit">
       </form>
   </p>
 
 </body>
+
+<footer>
+  <% include partials/_footer %>
+</footer>
+
+</html>

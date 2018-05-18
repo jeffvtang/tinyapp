@@ -1,16 +1,18 @@
-<head>Header Title WIP</head>
-<!-- name -->
-<% if (!users) { %>
+<b><font size= "5">Tiny App!</font></b>
+
+<% if (users) { %>
+  <p>
+  <form action="/logout" method="POST">
+    Currently logged in as: <%= users.email %>
+    <input type="submit" value="Logout">
+  </form>
+</p>
+  <% } else { %>
+  <br>
   <form action="/login" method="GET">
     <input type="submit" value="Login">
   </form>
   <form action="/register" method="GET">
     <input type="submit" value="Register">
   </form>
-  <% } else { %>
-    <br>
-    <%= users.email %>
-      <form action="/logout" method="POST">
-        <input type="submit" value="Logout">
-      </form>
-      <% } %>
+<% } %>

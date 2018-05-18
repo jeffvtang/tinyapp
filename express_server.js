@@ -45,7 +45,7 @@ const urlDatabase = {
     userID: "workingID"
   },
   "b2xVn4": {
-    longURL: "http://www.lighthouselabs.ca2",
+    longURL: "http://www.amazon.ca",
     userID: "workingID"
   },
   "9sm5xK": {
@@ -74,7 +74,6 @@ function urlsForUser(id) {
 }
 
 app.get("/", (req, res) => {
-  // res.end("Hello!");
   if (req.session.user_id) {
     res.redirect("/urls")
     return;
@@ -143,13 +142,13 @@ app.get("/urls/:id", (req, res) => {
     users: users[req.session.user_id]
   };
   if (!req.session.user_id) {
-    res.status(400).send('please login to edit links')
+    res.status(404).send('please login to edit links')
     return
   }
   if (req.session.user_id == urlDatabase[req.params.id].userID) {
     res.render("urls_show", templateVars);
   } else {
-    res.status(400).send('cannot access url not belonging to user')
+    res.status(404).send('cannot access url not belonging to user')
   }
 });
 
@@ -171,7 +170,7 @@ app.get("/400", (req, res) => {
 
 app.post("/register", (req, res) => {
   if (!req.body.email || !req.body.password) {
-    res.status(400).send('missing parameter')
+    res.status(404).send('missing parameter')
     return
   }
   let newUser = req.body.email
@@ -179,7 +178,7 @@ app.post("/register", (req, res) => {
   for (list in users) {
     objectEmail = users[list].email
     if (newUser == objectEmail) {
-      res.status(400).send('email already exists')
+      res.status(404).send('email already exists')
       return
     }
   }
@@ -208,15 +207,15 @@ app.post("/login", (req, res) => {
           res.redirect("/urls")
           return
         } else {
-          res.status(400).send('Wrong password')
+          res.status(404).send('Wrong password')
           return
         }
       }
     }
-    res.status(400).send('email does not exist')
+    res.status(404).send('email does not exist')
     return
   }
-  res.status(400).send('no email entered')
+  res.status(404).send('no email entered')
 })
 
 app.post("/logout", (req, res) => {
@@ -227,10 +226,10 @@ app.post("/logout", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL
   if (!req.session.user_id) {
-    res.status(400).send('cannot delete without logging in')
+    res.status(404).send('cannot delete without logging in')
     return
   } else if (req.session.user_id !== urlDatabase[shortURL].userID) {
-    res.status(400).send('cannot delete another users saved links')
+    res.status(404).send('cannot delete another users saved links')
     return
   }
   if (shortURL && req.session.user_id == urlDatabase[shortURL].userID) {
@@ -242,13 +241,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL
   if (!req.session.user_id) {
-    res.status(400).send('cannot edit without logging in')
+    res.status(404).send('cannot edit without logging in')
     return
   } else if (req.session.user_id !== urlDatabase[shortURL].userID) {
-    res.status(400).send('cannot edit another users saved links')
+    res.status(404).send('cannot edit another users saved links')
     return
   }
-  if ( /*shortURL && */ req.session.user_id == urlDatabase[shortURL].userID) {
+  if (req.session.user_id == urlDatabase[shortURL].userID) {
     urlDatabase[shortURL].longURL = req.body.editURL
   }
   res.redirect("/urls/")
@@ -256,7 +255,7 @@ app.post("/urls/:shortURL", (req, res) => {
 
 app.post("/urls", (req, res) => {
   if (!req.session.user_id) {
-    res.status(400).send('not logged in')
+    res.status(404).send('not logged in')
     return
   }
   let randomShortURL = generateRandomString()

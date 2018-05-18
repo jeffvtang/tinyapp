@@ -2,22 +2,21 @@
 <html lang="en">
 
 <head>
-  <title>TinyApp</title>
+  <title>TinyApp - Home</title>
 </head>
 
-<header>
-  <% include partials/_header %>
-</header>
-
 <body>
+  <header>
+    <% include partials/_header %>
+  </header>
   <div class="container">
     <% if (users) { %>
       <table class="table">
         <thead>
           <tr>
-            <th>Shortened</th>
-            <th>Full Link</th>
-            <th></th>
+            <th>Short Link</th>
+            <th style="width: 300px">Full Link</th>
+            <th>Edit</th>
             <th>Delete</th>
           </tr>
         </thead>
@@ -25,7 +24,9 @@
           <% for (const links in urls) { %>
             <tr>
               <td>
-                <%- links %>
+                <a href="/u/<%= links %>">
+                  <%- links %>
+                </a>
               </td>
               <td>
                 <%= urls[links].longURL %>
@@ -42,7 +43,7 @@
             <% } %>
               <tr>
                 <td colSpan="2">
-                  <a href="/urls/new">Shorten Link</a>
+                  <a href="/urls/new">Shorten a New Link</a>
                 </td>
               </tr>
         </tbody>
