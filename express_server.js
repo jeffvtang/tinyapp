@@ -133,7 +133,11 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   if (urlDatabase[req.params.id] === undefined) {
-    res.status(404).send('this url does not exist')
+    let errRes = {
+      errHead: "404 - Page Not Found",
+      errBody: "This URL does not exist"
+    }
+    res.render("error", errRes)
     return
   }
   let templateVars = {
@@ -142,13 +146,22 @@ app.get("/urls/:id", (req, res) => {
     users: users[req.session.user_id]
   };
   if (!req.session.user_id) {
-    res.status(404).send('please login to edit links')
+    let errRes = {
+      errHead: "401 - Unauthorized",
+      errBody: "Please login to edit links"
+    }
+    res.render("error", errRes)
     return
   }
   if (req.session.user_id == urlDatabase[req.params.id].userID) {
     res.render("urls_show", templateVars);
   } else {
-    res.status(404).send('cannot access url not belonging to user')
+    let errRes = {
+      errHead: "403 - Forbidden",
+      errBody: "Cannot edit a link that belongs to another user"
+    }
+    res.render("error", errRes)
+    return
   }
 });
 
@@ -161,16 +174,28 @@ app.get("/u/:shortURL", (req, res) => {
       return
     }
   }
-  res.status(404).send('url does not exist')
+  let errRes = {
+    errHead: "404 - Page Not Found",
+    errBody: "This URL does not exist"
+  }
+  res.render("error", errRes)
 });
 
-app.get("/400", (req, res) => {
-  res.render("400")
-})
+app.get("/:invalid", (req, res) => {
+  let errRes = {
+    errHead: "404 - Page Not Found",
+    errBody: "This URL does not exist"
+  }
+  res.render("error", errRes)
+});
 
 app.post("/register", (req, res) => {
   if (!req.body.email || !req.body.password) {
-    res.status(404).send('missing parameter')
+    let errRes = {
+      errHead: "400 - Bad Request",
+      errBody: "All fields required"
+    }
+    res.render("error", errRes)
     return
   }
   let newUser = req.body.email
@@ -178,20 +203,22 @@ app.post("/register", (req, res) => {
   for (list in users) {
     objectEmail = users[list].email
     if (newUser == objectEmail) {
-      res.status(404).send('email already exists')
+      let errRes = {
+        errHead: "400 - Bad Request",
+        errBody: "Email already in use"
+      }
+      res.render("error", errRes)
       return
     }
   }
-    randUserID = generateRandomString()
-    users[randUserID] = {
-      id: randUserID,
-      email: newUser,
-      password: newPass
-    }
-    req.session.user_id = randUserID
-    console.log('success adding user')
-    console.log(users)
-    res.redirect("/urls")
+  randUserID = generateRandomString()
+  users[randUserID] = {
+    id: randUserID,
+    email: newUser,
+    password: newPass
+  }
+  req.session.user_id = randUserID
+  res.redirect("/urls")
 })
 
 
@@ -207,29 +234,50 @@ app.post("/login", (req, res) => {
           res.redirect("/urls")
           return
         } else {
-          res.status(404).send('Wrong password')
+          let errRes = {
+            errHead: "401 - Unauthorized",
+            errBody: "Please verify your password"
+          }
+          res.render("error", errRes)
           return
         }
       }
     }
-    res.status(404).send('email does not exist')
+    let errRes = {
+      errHead: "401 - Unauthorized",
+      errBody: "Please verify your login email address"
+    }
+    res.render("error", errRes)
     return
   }
-  res.status(404).send('no email entered')
+  let errRes = {
+    errHead: "400 - Bad Request",
+    errBody: "Email cannot be left empty"
+  }
+  res.render("error", errRes)
+  return
 })
 
 app.post("/logout", (req, res) => {
-  req.session.user_id = null
+  req.session = null
   res.redirect("/urls")
 })
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL
   if (!req.session.user_id) {
-    res.status(404).send('cannot delete without logging in')
+    let errRes = {
+      errHead: "401 - Unauthorized",
+      errBody: "Please login to delete links"
+    }
+    res.render("error", errRes)
     return
   } else if (req.session.user_id !== urlDatabase[shortURL].userID) {
-    res.status(404).send('cannot delete another users saved links')
+    let errRes = {
+      errHead: "403 - Forbidden",
+      errBody: "Cannot delete a link that belongs to another user"
+    }
+    res.render("error", errRes)
     return
   }
   if (shortURL && req.session.user_id == urlDatabase[shortURL].userID) {
@@ -241,10 +289,18 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL
   if (!req.session.user_id) {
-    res.status(404).send('cannot edit without logging in')
+    let errRes = {
+      errHead: "401 - Unauthorized",
+      errBody: "Please login to delete links"
+    }
+    res.render("error", errRes)
     return
   } else if (req.session.user_id !== urlDatabase[shortURL].userID) {
-    res.status(404).send('cannot edit another users saved links')
+    let errRes = {
+      errHead: "403 - Forbidden",
+      errBody: "Cannot edit a link that belongs to another user"
+    }
+    res.render("error", errRes)
     return
   }
   if (req.session.user_id == urlDatabase[shortURL].userID) {
@@ -255,7 +311,11 @@ app.post("/urls/:shortURL", (req, res) => {
 
 app.post("/urls", (req, res) => {
   if (!req.session.user_id) {
-    res.status(404).send('not logged in')
+    let errRes = {
+      errHead: "401 - Unauthorized",
+      errBody: "Please login to use TinyApp!"
+    }
+    res.render("error", errRes)
     return
   }
   let randomShortURL = generateRandomString()
