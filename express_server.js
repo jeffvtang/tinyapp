@@ -1,14 +1,21 @@
-var express = require("express");
-var app = express();
-var PORT = process.env.PORT || 8080; // default port 8080
-var cookieSession = require('cookie-session')
-
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 8080; // default port 8080
+const cookieSession = require('cookie-session')
 const bodyParser = require("body-parser");
+const bcrypt = require('bcrypt');
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-const bcrypt = require('bcrypt');
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2'],
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
+app.set("view engine", "ejs");
+
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -27,19 +34,12 @@ const users = {
   },
   'nqPn0E': {
     id: 'nqPn0E',
-    email: 'abc@gmail.com',
+    email: 'user@lighthouselabs.com',
     password: '$2b$10$DYSk7Uj.p5d3AGvgtwI1u.xWktVOFSr6ccFPk1xSAgW4YdxSN4M8O'
   }
 }
 
-app.use(cookieSession({
-  name: 'session',
-  keys: ['key1', 'key2'],
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
-app.set("view engine", "ejs");
-
-var urlDatabase = {
+const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
     userID: "workingID"
@@ -58,27 +58,26 @@ function generateRandomString() {
   let text = "";
   let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (var i = 0; i < 6; i++)
+  for (let i = 0; i < 6; i++)
     text += possible.charAt(Math.floor(Math.random() * possible.length));
-
   return text;
 }
 
 function urlsForUser(id) {
-  let userURLS = {}
+  let userURLS = {};
   for (link in urlDatabase) {
     if (urlDatabase[link].userID == id) {
       userURLS[link] = urlDatabase[link]
     }
   }
-  return userURLS
+  return userURLS;
 }
 
 app.get("/", (req, res) => {
   // res.end("Hello!");
   if (req.session.user_id) {
     res.redirect("/urls")
-    return
+    return;
   }
   res.redirect("/login")
 });
@@ -171,6 +170,10 @@ app.get("/400", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
+  if (!req.body.email || !req.body.password) {
+    res.status(400).send('missing parameter')
+    return
+  }
   let newUser = req.body.email
   let newPass = bcrypt.hashSync(req.body.password, 10)
   for (list in users) {
@@ -180,10 +183,6 @@ app.post("/register", (req, res) => {
       return
     }
   }
-  if (!newUser || !newPass) {
-    res.status(400).send('missing parameter')
-    return
-  } else {
     randUserID = generateRandomString()
     users[randUserID] = {
       id: randUserID,
@@ -194,7 +193,6 @@ app.post("/register", (req, res) => {
     console.log('success adding user')
     console.log(users)
     res.redirect("/urls")
-  }
 })
 
 
